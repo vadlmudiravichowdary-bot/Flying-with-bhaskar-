@@ -2,62 +2,30 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Flying Bhaskar - DIALOGUES</title>
+<title>Flying With Bhaskar</title>
 <style>
 body{margin:0;background:skyblue;overflow:hidden;font-family:Arial;touch-action:none}
-#game{width:100vw;height:100vh;position:relative;background:linear-gradient(#87CEEB, #90EE90)}
-#player{width:55px;height:55px;background:radial-gradient(yellow, orange);border-radius:50%;position:absolute;left:25%;border:3px solid red;display:flex;align-items:center;justify-content:center;font-size:28px;z-index:5;box-shadow:0 0 12px gold}
-.pipe{width:70px;background:linear-gradient(#2ecc71, #145a32);position:absolute;border:3px solid #000;border-radius:10px}
-#score{position:fixed;top:15px;left:50%;transform:translateX(-50%);font-size:36px;font-weight:bold;color:white;text-shadow:3px 3px 0 black;z-index:10}
-#dialogue{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.8);color:gold;padding:12px 25px;border-radius:30px;font-weight:bold;font-size:18px;display:none;z-index:15;border:2px solid gold;animation:pop 0.3s}
-@keyframes pop{0%{transform:translateX(-50%) scale(0)}100%{transform:translateX(-50%) scale(1)}}
-#start{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(gold, orange);color:black;padding:25px 45px;border-radius:25px;font-weight:bold;text-align:center;z-index:20;border:4px solid white}
+#game{width:100vw;height:100vh;position:relative;background:linear-gradient(#87CEEB,#90EE90)}
+#player{width:50px;height:50px;background:radial-gradient(yellow,orange);border-radius:50%;position:absolute;left:25%;border:3px solid red;display:flex;align-items:center;justify-content:center;font-size:28px;z-index:5;box-shadow:0 0 10px gold}
+.pipe{width:70px;background:linear-gradient(#2ecc71,#145a32);position:absolute;border:3px solid #000;border-radius:10px}
+#score{position:fixed;top:15px;left:50%;transform:translateX(-50%);font-size:40px;font-weight:bold;color:white;text-shadow:3px 3px 0 black;z-index:10}
+#start{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(gold,orange);color:black;padding:25px 45px;border-radius:25px;font-weight:bold;text-align:center;z-index:20;border:4px solid white;box-shadow:0 0 20px black}
 </style>
 </head>
 <body>
 <div id="score">0</div>
-<div id="dialogue"></div>
 <div id="game"><div id="player">😎</div><div id="start">TAP TO FLY<br><br>FLYING WITH BHASKAR</div></div>
 <script>
-let player=document.getElementById('player'), game=document.getElementById('game'), scoreEl=document.getElementById('score'), start=document.getElementById('start'), dia=document.getElementById('dialogue');
+let player=document.getElementById('player'), game=document.getElementById('game'), scoreEl=document.getElementById('score'), start=document.getElementById('start');
 let py=300, vy=0, score=0, started=false, pipes=[];
-let gravity=0.32, jump=-7.5;
-
-let dialogues=[
-"Mass ra Bhaskar! 🔥",
-"Dummu leputhunnav ra!",
-"Durga chusthondi - jagratha!",
-"Rey Bhaskar, yeguru ra yeguru!",
-"Adhi ra mass! 💥",
-"Bhaskar anna mass!",
-"Pilla gaadi speed!",
-"Yevadu aapaledu ninnu!"
-];
-
-function showDia(){
- dia.innerText=dialogues[Math.floor(Math.random()*dialogues.length)];
- dia.style.display='block';
- setTimeout(()=>dia.style.display='none',1200);
-}
+let gravity=0.35, jump=-8;
 
 function jumpFun(){ if(!started){started=true; start.style.display='none'; spawnPipe();} vy=jump; }
-document.addEventListener('touchstart', (e)=>{e.preventDefault(); jumpFun();},{passive:false});
+document.addEventListener('touchstart', e=>{e.preventDefault(); jumpFun();},{passive:false});
 document.addEventListener('mousedown', jumpFun);
+document.addEventListener('keydown', e=>{if(e.code=='Space') jumpFun();});
 
 function spawnPipe(){
  if(!started) return;
  let h=Math.random()*180+60;
- let topPipe=document.createElement('div'); topPipe.className='pipe'; topPipe.style.height=h+'px'; topPipe.style.left='100vw'; topPipe.style.top='0px'; game.appendChild(topPipe);
- let bottomPipe=document.createElement('div'); bottomPipe.className='pipe'; bottomPipe.style.height=(window.innerHeight-h-230)+'px'; bottomPipe.style.left='100vw'; bottomPipe.style.bottom='0px'; game.appendChild(bottomPipe);
- pipes.push({top:topPipe, bottom:bottomPipe, x:window.innerWidth, scored:false});
- setTimeout(spawnPipe, 2200);
-}
-
-function loop(){
- if(!started){ requestAnimationFrame(loop); return; }
- vy+=gravity; py+=vy;
- if(py<0) py=0; 
- if(py>window.innerHeight-55){ gameOver(); return; }
- player.style.top=py+'px';
- pipes.forEach((p,i)=>{
-  p.x-=2.3; p.top.style.left=p.x+'
+ let topPipe=document.createElement('div'); topPipe.className='pipe'; topPipe.style.height=h+'px'; topPipe.style.left='100vw'; topPipe.style.top='
