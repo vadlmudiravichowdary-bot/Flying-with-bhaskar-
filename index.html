@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Flying Friends - Real Photo</title>
+<title>Flying Friends - Slow Mode</title>
 <style>
  body{margin:0;background:#0b1026;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;color:white;font-family:sans-serif}
  canvas{background:linear-gradient(#0b1026,#1e3c72);border-radius:20px;max-width:95vw;max-height:68vh;box-shadow:0 10px 30px rgba(0,0,0,.6)}
@@ -13,7 +13,7 @@
 </style>
 </head>
 <body>
-<h1>✨ Flying Friends ✨</h1>
+<h1>✨ Flying Friends - Slow ✨</h1>
 <div id="score">Score: 0</div>
 <canvas id="game" width="400" height="650"></canvas>
 <div style="opacity:.8;font-size:13px;margin-top:6px">Tap / Space to Fly!</div>
@@ -23,11 +23,18 @@
 <script>
 const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
 const img=document.getElementById('friendImg');
-let bird={x:90,y:320,vy:0,r:36},gravity=0.48,jump=-9,pipes=[],score=0,gameOver=false,frame=0;
-function addPipe(){let topH=Math.random()*280+60;pipes.push({x:canvas.width,top:topH,gap:170,passed:false})}
+
+// --- SPEED CONTROL --- SLOW CHESINA PLACE LU ---
+let bird={x:90,y:320,vy:0,r:36},gravity=0.28,jump=-7,pipes=[],score=0,gameOver=false,frame=0;
+// gravity 0.48 -> 0.28 chesa (slow ga padthadi)
+// jump -9 -> -7 chesa (ekkuva egaradu)
+
+function addPipe(){let topH=Math.random()*280+60;pipes.push({x:canvas.width,top:topH,gap:190,passed:false})} // gap 170->190 easy
+
 canvas.addEventListener('touchstart',e=>{e.preventDefault();bird.vy=jump});
 canvas.addEventListener('mousedown',()=>bird.vy=jump);
 document.addEventListener('keydown',e=>{if(e.code==='Space'){bird.vy=jump;e.preventDefault()}});
+
 function playOutSound(){
   const s=document.getElementById('outSound');
   if(s){ s.currentTime=0; s.play().catch(()=>{}); }
@@ -35,7 +42,11 @@ function playOutSound(){
 function drawBird(){
  ctx.save();
  ctx.beginPath(); ctx.arc(bird.x,bird.y,bird.r,0,Math.PI*2); ctx.clip();
- ctx.drawImage(img, 0,0, img.width, img.height, bird.x-bird.r, bird.y-bird.r, bird.r*2, bird.r*2);
+ if(img.complete && img.naturalWidth>0){
+   ctx.drawImage(img, 0,0, img.width, img.height, bird.x-bird.r, bird.y-bird.r, bird.r*2, bird.r*2);
+ } else {
+   ctx.fillStyle='#ffde59'; ctx.fillRect(bird.x-bird.r, bird.y-bird.r, bird.r*2, bird.r*2);
+ }
  ctx.restore();
  ctx.strokeStyle='#ffde59'; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(bird.x,bird.y,bird.r,0,Math.PI*2); ctx.stroke();
 }
@@ -46,9 +57,9 @@ function loop(){
  ctx.fillStyle='#fff9c4'; ctx.beginPath(); ctx.arc(340,70,32,0,Math.PI*2); ctx.fill();
  ctx.fillStyle='white';
  for(let i=0;i<40;i++){ let sx=(i*71+frame*0.4)%400; let sy=(i*47)%650; ctx.globalAlpha=0.5; ctx.fillRect(sx,sy,2,2);} ctx.globalAlpha=1;
- if(frame%95===0) addPipe();
+ if(frame%130===0) addPipe(); // 95->130 - pipes late ga vasthay - easy
  pipes.forEach(p=>{
-  p.x-=3.2;
+  p.x-=1.8; // 3.2 -> 1.8 - IDI MAIN SPEED! Pipe slow ga vasthadi
   ctx.fillStyle='#27ae60'; ctx.fillRect(p.x,0,62,p.top); ctx.fillRect(p.x,p.top+p.gap,62,650);
   if(bird.x+bird.r>p.x && bird.x-bird.r<p.x+62){ if(bird.y-bird.r<p.top || bird.y+bird.r>p.top+p.gap){ if(!gameOver) playOutSound(); gameOver=true; } }
   if(!p.passed && p.x+62<bird.x){p.passed=true;score++;document.getElementById('score').innerText='Score: '+score;}
@@ -62,6 +73,7 @@ function loop(){
 }
 img.onload=()=>loop();
 if(img.complete) loop();
+setTimeout(()=>{if(frame===0) loop()}, 500);
 </script>
 </body>
 </html>
